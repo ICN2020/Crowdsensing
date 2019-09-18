@@ -1,0 +1,321 @@
+p {
+  margin: 0px;
+}
+h1 {
+  margin: 0px;
+}
+h2 {
+  margin: 0px;
+}
+h3 {
+  margin: 0px;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+body {
+  transform: perspective(1400px) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  transform-style: preserve-3d;
+  /* background-image: url("img/sample10.jpg"); */
+  /* background-color: rgb(18, 86, 118); */
+  /* background-color: rgb(0, 0, 0); */
+  /* opacity: 0.95; */
+  background-color: rgb(255, 255, 255);
+  font-family: "Helvetica Neue", Ubuntu, Helvetica, Arial;
+}
+.gwd-table-aflo {
+  background-color: transparent;
+  /* background-image: url("../../img/suita.png"); */
+  /* background-repeat: no-repeat; */
+  /* background-size: cover; */
+  position: absolute;
+  border-collapse: collapse;
+  width: 50.92%;
+  height: 87.9%;
+  left: 25%;
+  top: 12%;
+}
+.gwd-img-111z {
+  position: absolute;
+  transform-origin: 287.721px 301.481px 0px;
+  transition: all 3s ease 0s;
+  opacity: 1;
+  width: 50.92%;
+  height: 87.9%;
+  left: 25%;
+  top: 12%;
+  background-color: transparent;
+}
+.gwd-p-xpsn {
+  position: absolute;
+  left: 0.97%;
+  top: 1.02%;
+  height: 8.16%;
+  width: 46.15%;
+  text-align: center;
+  font-size: 3vw;
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  /* background-image: -webkit-linear-gradient(0deg, rgb(32, 32, 32) 58%, rgba(0, 0, 0, 0.1) 99%); */
+  /* border-image-source: none; */
+  /* border-image-width: 1; */
+  /* border-image-outset: 0; */
+  /* border-image-repeat: stretch; */
+  /* border-color: rgb(128, 128, 128); */
+  /* border-width: 8px; */
+  border-bottom: 1px solid rgb(204, 204, 204);
+  /* transform-origin: 513.612px 300.049px 0px; */
+}
+.gwd-div-1fcc {
+  position: absolute;
+  /* background-image: none; */
+  background-color: rgb(255, 255, 255);
+  top: 79px;
+  left: 15px;
+  width: 252px;
+  height: 269px;
+  transform-origin: 125.805px 134.497px 0px;
+}
+.gwd-div-1nq8 {
+  position: absolute;
+  /* background-image: none; */
+  background-color: rgb(255, 255, 255);
+  left: 877px;
+  top: 79px;
+  width: 244px;
+  height: 421px;
+  transform-origin: 121.931px 210.7px 0px;
+}
+.gwd-div-1q0l {
+  transform-origin: 125.805px 145.984px 0px;
+  left: 1.33%;
+  top: 56.85%;
+  width: 22.32%;
+  height: 42.57%;
+}
+.gwd-div-b7od {
+  transform-origin: 125.805px 150.03px 0px;
+  left: 1.33%;
+  top: 11.52%;
+  width: 22.32%;
+  height: 43.73%;
+}
+.gwd-span-172v {
+  font-size: 20px;
+}
+.gwd-span-1lbk {
+  font-size: 10px;
+}
+.gwd-span-1sd1 {
+  font-size: 10px;
+}
+.gwd-span-1fcq {
+  font-size: 10px;
+}
+.gwd-span-10hl {
+  position: absolute;
+  text-align: center;
+  background-image: none;
+  color: rgb(0, 0, 0);
+  border-bottom: 1px solid rgb(128, 128, 128);
+  font-weight: bold;
+  width: 150px;
+  left: 61px;
+  top: 86px;
+  height: 100%;
+  font-size: 3vh;
+}
+.gwd-span-1jbw {
+  left: 5.85%;
+  top: 58.16%;
+  width: 13.29%;
+  height: 4.12%;
+  padding: 2px;
+}
+.gwd-div-78kk {
+  transform-origin: 121.913px 115.285px 0px;
+  left: 77.68%;
+  top: 65.74%;
+  width: 21.61%;
+  height: 33.53%;
+}
+.gwd-button-m20h {
+  position: absolute;
+  width: 100px;
+  height: 24px;
+  left: 1012px;
+  top: 644px;
+  background-image: none;
+  background-color: rgb(255, 255, 255);
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: bold;
+  font-style: normal;
+}
+.gwd-input-qpzt {
+  position: absolute;
+  width: 100px;
+  height: 20px;
+  left: 902.401px;
+  top: 538.8px;
+}
+.gwd-input-1w5c {
+  transform-origin: 87.6844px 12.975px 0px;
+  left: 79.81%;
+  top: 86.88%;
+  width: 15.15%;
+  height: 2.92%;
+}
+.gwd-div-1b90 {
+  transform-origin: 121.913px 173.062px 0px;
+  width: 21.61%;
+  height: 50.44%;
+  left: 77.68%;
+  top: 11.52%;
+}
+.gwd-input-1s14 {
+  transform-origin: 89.3841px 12.975px 0px;
+  width: 15.5%;
+  height: 2.92%;
+  left: 79.63%;
+  top: 75.22%;
+}
+.gwd-span-pjcz {
+  left: 925px;
+  top: 86px;
+}
+.gwd-span-ewdw {
+  height: 4.12%;
+  padding: 2px;
+  width: 15%;
+  left: 81%;
+  top: 67%;
+}
+.gwd-span-1ad0 {
+  position: absolute;
+  font-weight: 700;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  font-size: 12px;
+  left: 898px;
+  top: 498px;
+}
+.gwd-span-oegd {
+  transform-origin: 92.2264px 17.5612px 0px;
+  font-size: 15px;
+  width: 11.51%;
+  height: 1.02%;
+  left: 78.92%;
+  top: 84.11%;
+}
+.gwd-div-1t2f {
+  position: absolute;
+  width: 228.6px;
+  height: 244.525px;
+  left: 26.001px;
+  top: 124.275px;
+  text-align: left;
+  font-size: 12px;
+  color: rgb(0, 0, 0);
+  overflow: scroll;
+}
+.gwd-div-nzix {
+  transform-origin: 114.281px 114.391px 0px;
+  text-align: left;
+  font-size: 12px;
+  color: rgb(0, 0, 0);
+  overflow: scroll;
+  left: 2.3%;
+  top: 64.72%;
+  width: 20.28%;
+  height: 33.38%;
+}
+.gwd-div-1d96 {
+  transform-origin: 114.281px 140.889px 0px;
+  text-align: left;
+  font-size: 18px;
+  color: rgb(0, 0, 0);
+  overflow: scroll;
+  left: 78.3%;
+  top: 18.66%;
+  width: 20.28%;
+  height: 41.11%;
+}
+.gwd-button-ojji {
+  left: 89.64%;
+  top: 93.88%;
+  width: 8.86%;
+  height: 3.5%;
+}
+.receiveLog {
+  text-align: center;
+  font-size: 20px;
+  color: rgb(0, 0, 0);
+}
+.targetList {
+  text-align: center;
+  font-size: 20px;
+  color: rgb(0, 0, 0);
+}
+td {
+  border: 1px solid;
+  padding: 0.5em;
+  transition: all 0.5s ease 0s;
+  /* opacity: 0; */
+}
+.default {}
+.found {
+  background-color: red;
+}
+.notFound {
+  background-color: blue;
+}
+.back {
+  opacity: 0.5;
+}
+.front {
+  opacity: 0.8;
+}
+.gwd-div-z3ni {
+  left: 2.3%;
+  top: 18.12%;
+  width: 20.25%;
+  height: 35.65%;
+}
+.gwd-span-y269 {
+  left: 81.93%;
+  top: 12.54%;
+  width: 13.29%;
+  height: 4.12%;
+  padding: 2px;
+}
+.gwd-span-1atb {
+  left: 5.4%;
+  top: 12.54%;
+  width: 13.29%;
+  height: 4.12%;
+  padding: 2px;
+}
+.gwd-div-owx6 {
+  position: absolute;
+  border-style: solid;
+  border-width: 5px;
+  border-image-source: none;
+  border-image-width: 1;
+  border-image-outset: 0;
+  border-image-repeat: stretch;
+  border-color: rgb(19, 17, 42);
+  box-sizing: border-box;
+  background-image: none;
+  background-color: rgb(35, 84, 93);
+  width: 50.92%;
+  height: 87.9%;
+  left: 25%;
+  top: 12%;
+}
+.gwd-span-1gsz {
+  top: 72.3%;
+  left: 78.45%;
+}
