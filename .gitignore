@@ -1,0 +1,7 @@
+bin/
+dep/
+obj/
+*~
+*.o
+.DS_Store
+.vscode/

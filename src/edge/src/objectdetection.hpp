@@ -20,6 +20,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * @author Yoji Yamamoto
+ *
  */
 #ifndef OBJECTDETECTION_HPP_INC
 #define OBJECTDETECTION_HPP_INC
@@ -49,14 +52,14 @@ class ObjectDetection {
   ObjectDetection(const ObjectDetection&) = delete;
   ObjectDetection& operator=(const ObjectDetection&) = delete;
 
-  virtual void detect(cv::Mat frame,std::vector<std::string>& result) = 0;
+  virtual void detect(cv::Mat frame, std::vector<std::string>& result) = 0;
 };
 
 class EmulateObjectDetection : public ObjectDetection {
  public:
   EmulateObjectDetection();
   ~EmulateObjectDetection() {}
-  void detect(cv::Mat frame,std::vector<std::string>& result) override;
+  void detect(cv::Mat frame, std::vector<std::string>& result) override;
 
  private:
   std::vector<std::string> m_classes;

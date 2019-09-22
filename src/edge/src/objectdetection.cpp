@@ -20,6 +20,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * @author Yoji Yamamoto
+ *
  */
 #include "objectdetection.hpp"
 #include <algorithm>
@@ -124,7 +127,7 @@ void DnnObjectDetection::detect(cv::Mat frame, std::vector<std::string>& result)
 {
   std::string str;
   cv::Mat blob;
-  std::cerr <<" in func " << std::endl;
+  std::cerr << " in func " << std::endl;
 
   /* {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -135,8 +138,7 @@ void DnnObjectDetection::detect(cv::Mat frame, std::vector<std::string>& result)
   cv::dnn::blobFromImage(frame, blob, 1 / 255.0, cvSize(inpWidth, inpHeight), cv::Scalar(0, 0, 0),
                          true, false);
 
-   std::cerr <<" in blob " << std::endl;
-
+  std::cerr << " in blob " << std::endl;
 
   // Sets the input to the network
   m_net.setInput(blob);

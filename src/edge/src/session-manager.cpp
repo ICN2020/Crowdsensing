@@ -1,43 +1,63 @@
 /**
- * @brief
- * @author Yuki Koizumi
+ * Copyright (c) 2019 Osaka University
+ *
+ * This software is released under the MIT License.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * @author Yoji Yamamoto
+ *
  */
 #include "session-manager.hpp"
 
-#include <ndn-cxx/name.hpp>
 #include <ndn-cxx/data.hpp>
+#include <ndn-cxx/name.hpp>
 
-#include <fcopss/log.hpp>
 #include <cinttypes>
-#include <vector>
+#include <fcopss/log.hpp>
 #include <ostream>
+#include <vector>
 
 #include <boost/asio.hpp>
 
-class Session
-{
+class Session {
  public:
   Session() = delete;
   Session(uint64_t id_, std::shared_ptr<ndn::Data> data_,
           std::shared_ptr<boost::asio::steady_timer> timer_)
-      : session_id(id_),
-        data_ptr(data_),
-        timer_ptr(timer_)
-  {}
+      : session_id(id_), data_ptr(data_), timer_ptr(timer_)
+  {
+  }
   ~Session() noexcept = default;
 
   Session(const Session &other) = default;
-  Session& operator=(const Session &other) = default;
+  Session &operator=(const Session &other) = default;
   Session(Session &&other) noexcept = default;
-  Session& operator=(Session &&other) noexcept = default;
+  Session &operator=(Session &&other) noexcept = default;
 
   // void append_payload(const std::string &str);
 
  public:
-  const uint64_t             session_id;
+  const uint64_t session_id;
   std::shared_ptr<ndn::Data> data_ptr;
   std::shared_ptr<boost::asio::steady_timer> timer_ptr;
-  std::vector<uint8_t>       buffer;
+  std::vector<uint8_t> buffer;
 };
 
 // void Session::append_payload(const std::string &str)
@@ -66,8 +86,7 @@ SessionManager::session_ptr SessionManager::get(key_type key)
   std::lock_guard<mutex_type> lock(m_mutex);
   try {
     return m_hash_table.at(key);
-  }
-  catch(std::out_of_range&) {
+  } catch(std::out_of_range &) {
     return session_ptr();
   }
 }
@@ -108,10 +127,12 @@ std::shared_ptr<ndn::Data> SessionManager::data_packet(key_type key)
   return data->data_ptr;
 }
 
-void SessionManager::dump(std::ostream &os) const {
+void SessionManager::dump(std::ostream &os) const
+{
   std::for_each(m_hash_table.begin(), m_hash_table.end(),
                 [&os](const std::pair<key_type, session_ptr> &p) {
-                  os << '{' << p.first << ',' << p.second->data_ptr->getName().toUri().c_str() << "}, " << std::endl;
+                  os << '{' << p.first << ',' << p.second->data_ptr->getName().toUri().c_str()
+                     << "}, " << std::endl;
                 });
   return;
 }
