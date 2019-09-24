@@ -20,6 +20,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * @author Yoji Yamamoto
+ *
  */
 #ifndef OBJECTDETECTION_HPP_INC
 #define OBJECTDETECTION_HPP_INC
@@ -49,10 +52,9 @@ class ObjectDetection {
   ObjectDetection(const ObjectDetection&) = delete;
   ObjectDetection& operator=(const ObjectDetection&) = delete;
 
-  //cv::Mat returnblob();
+  // cv::Mat returnblob();
   virtual void detect(std::vector<std::string>& result) = 0;
   virtual cv::Mat returnMat() = 0;
-
 };
 
 class EmulateObjectDetection : public ObjectDetection {
@@ -72,7 +74,6 @@ class DnnObjectDetection : public ObjectDetection {
   ~DnnObjectDetection();
   void detect(std::vector<std::string>& result) override;
   cv::Mat returnMat() override;
-  
 
   // ムーブはOK
   DnnObjectDetection(DnnObjectDetection&&) = default;
@@ -88,7 +89,6 @@ class DnnObjectDetection : public ObjectDetection {
   void drawPred(int classId, float conf, int left, int top, int right, int bottom, cv::Mat& frame);
   std::vector<cv::String> getOutputsNames();
   void capture();
-  
 
  private:
   const float confThreshold = 0.5;  // Confidence threshold

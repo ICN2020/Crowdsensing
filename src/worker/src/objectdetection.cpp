@@ -20,6 +20,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * @author Yoji Yamamoto
+ *
  */
 #include "objectdetection.hpp"
 #include <algorithm>
@@ -48,10 +51,9 @@ EmulateObjectDetection::EmulateObjectDetection() : ObjectDetection(), m_classes(
 
 cv::Mat EmulateObjectDetection::returnMat()
 {
-  cv::Mat m = (cv::Mat::zeros(5,5,CV_8U));
+  cv::Mat m = (cv::Mat::zeros(5, 5, CV_8U));
   return m;
 }
-
 
 void EmulateObjectDetection::detect(std::vector<std::string>& result)
 {
@@ -138,7 +140,7 @@ cv::Mat DnnObjectDetection::returnMat()
     frame = m_frame.clone();
   }
 
-  //std::cout << frame.rows << "\n "<< frame.cols << "\n " << frame.dims   << std::endl;
+  // std::cout << frame.rows << "\n "<< frame.cols << "\n " << frame.dims   << std::endl;
   cv::imwrite("camera.jpg", frame);
   return frame;
 }
