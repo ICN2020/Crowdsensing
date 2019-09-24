@@ -68,8 +68,7 @@ class Producer : boost::noncopyable {
 
   void send_data(const boost::system::error_code& error, uint64_t session_id);
   //この3つはまとめる
-  std::vector<std::string> convertInterestName(const std::string& interest_name);
-  // void convertInterestName(const std::string& interest_name, std::vector<std::string> &result);
+  void convertInterestName(const std::string& interest_name, std::vector<std::string> &interest_name_list);
   std::vector<std::string> ExtractTargets(const std::string& interest_name);
   std::vector<std::string> ExtractLocname(const std::string& interest_name);
   std::string decodeURI(const std::string& uri);

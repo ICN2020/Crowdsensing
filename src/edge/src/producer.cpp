@@ -148,27 +148,27 @@ void Producer::onInterest(const ndn::InterestFilter& filter, const ndn::Interest
   uint64_t session_id(m_id_generator());
 
   std::string interest_name(decodeURI(interest.getName().toUri()));
-  std::vector<std::string> Reinvoke_name(convertInterestName(interest_name));
-  m_issued_interest = Reinvoke_name.size();
+  std::vector<std::string> reinvoked_name;
+  convertInterestName(interest_name, reinvoked_name);
+  m_issued_interest = reinvoked_name.size();
 
   // Create Data packet
   std::shared_ptr<ndn::Data> data_packet(new ndn::Data());
   data_packet->setName(data_name);
-  data_packet->setFreshnessPeriod(1_ms);  // 10 seconds
+  data_packet->setFreshnessPeriod(1_ms);  // 1 milli-seconds
   m_key_chain.sign(*data_packet);
 
   std::shared_ptr<boost::asio::steady_timer> timer(new boost::asio::steady_timer(m_timer_service));
   timer->expires_from_now(std::chrono::milliseconds(m_timeout_second));
-  timer->async_wait(
-      boost::bind(&Producer::send_data, this, boost::asio::placeholders::error, session_id));
+  timer->async_wait(boost::bind(&Producer::send_data, this, boost::asio::placeholders::error, session_id));
   SessionManager::instance().add(session_id, data_packet, timer);
 
-  for(unsigned int j = 0; j < Reinvoke_name.size(); j++) {
+  for(unsigned int j = 0; j < reinvoked_name.size(); j++) {
     std::cerr << "[INFO] Interest name URI: " << interest.getName().toUri().c_str() << std::endl;
     std::cerr << "[INFO] Converted name: " << interest_name.c_str() << std::endl;
-    std::cerr << "[INFO] Re-invoke interest name: " << Reinvoke_name[j].c_str() << std::endl;
+    std::cerr << "[INFO] Re-invoke interest name: " << reinvoked_name[j].c_str() << std::endl;
 
-    ndn::Name interestName(Reinvoke_name[j] + "/" + std::to_string(session_id));
+    ndn::Name interestName(reinvoked_name[j] + "/" + std::to_string(session_id));
     ndn::Interest re_interest(interestName);
     re_interest.setCanBePrefix(true);
     re_interest.setMustBeFresh(true);
@@ -209,8 +209,9 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
 
   m_target_name = ExtractTargets(decodeURI(interest.getName().toUri()));
   std::string interest_name(decodeURI(interest.getName().toUri()));
-  std::vector<std::string> Reinvoke_name(convertInterestName(interest_name));
-  m_issued_interest = Reinvoke_name.size();
+  std::vector<std::string> reinvoked_name;
+  convertInterestName(interest_name, reinvoked_name);
+  m_issued_interest = reinvoked_name.size();
 
   // Create Data packet
   std::shared_ptr<ndn::Data> data_packet(new ndn::Data());
@@ -220,33 +221,30 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
 
   std::shared_ptr<boost::asio::steady_timer> timer(new boost::asio::steady_timer(m_timer_service));
   timer->expires_from_now(std::chrono::milliseconds(m_timeout_second));
-  timer->async_wait(
-      boost::bind(&Producer::send_data, this, boost::asio::placeholders::error, session_id));
+  timer->async_wait(boost::bind(&Producer::send_data, this, boost::asio::placeholders::error, session_id));
   SessionManager::instance().add(session_id, data_packet, timer);
 
-  for(unsigned int j = 0; j < Reinvoke_name.size(); j++) {
+  for(unsigned int j = 0; j < reinvoked_name.size(); j++) {
     std::cerr << "[INFO] Interest name URI: " << interest.getName().toUri().c_str() << std::endl;
     std::cerr << "[INFO] Converted name: " << interest_name.c_str() << std::endl;
-    std::cerr << "[INFO] Re-invoke interest name: " << Reinvoke_name[j].c_str() << std::endl;
+    std::cerr << "[INFO] Re-invoke interest name: " << reinvoked_name[j].c_str() << std::endl;
 
-    ndn::Name interestName(Reinvoke_name[j] + "/" + std::to_string(session_id));
+    ndn::Name interestName(reinvoked_name[j] + "/" + std::to_string(session_id));
     ndn::Interest re_interest(interestName);
     re_interest.setCanBePrefix(true);
     re_interest.setMustBeFresh(true);
-    m_location_name = ExtractLocname(Reinvoke_name[j] + "/" + std::to_string(session_id));
+    m_location_name = ExtractLocname(reinvoked_name[j] + "/" + std::to_string(session_id));
 
-    std::cerr << "Cloud:Sending Interest " << re_interest << std::endl;
+    std::cerr << "Cloud: Sending Interest " << re_interest << std::endl;
 
     ndn::util::SegmentFetcher::Options Opt;
     Opt.interestLifetime = 1_s;
     Opt.useConstantCwnd = true;
     Opt.initCwnd = 1;
 
-    Execute executor(re_interest.getName().toUri().c_str(), m_location_name[0], m_target_name[0],
-                     std::to_string(session_id), m_detector, this);
+    Execute executor(re_interest.getName().toUri().c_str(), m_location_name[0], m_target_name[0], std::to_string(session_id), m_detector, this);
     std::thread ndn_thread([this, re_interest, Opt, executor] {
-      auto fetcher = ndn::util::SegmentFetcher::start(
-          m_ndn_face, re_interest, ndn::security::v2::getAcceptAllValidator(), Opt);
+      auto fetcher = ndn::util::SegmentFetcher::start(m_ndn_face, re_interest, ndn::security::v2::getAcceptAllValidator(), Opt);
       fetcher->onComplete.connect(bind(&Execute::afterFetchComplete, executor, _1));
       fetcher->onError.connect(bind(&Execute::afterFetchError, executor, _1, _2));
     });
@@ -364,7 +362,7 @@ void Producer::onRegisterFailed(const ndn::Name& prefix, const std::string& reas
   m_ndn_face_ptr->shutdown();
 }
 
-std::vector<std::string> Producer::convertInterestName(const std::string& interest_name)
+void Producer::convertInterestName(const std::string& interest_name, std::vector<std::string> &interest_name_list)
 {
   std::vector<std::string> token_list;
   boost::algorithm::split(token_list, interest_name, boost::is_any_of("/"));
@@ -393,30 +391,27 @@ std::vector<std::string> Producer::convertInterestName(const std::string& intere
   boost::algorithm::replace_all(location, "[", "");
   boost::algorithm::replace_all(location, "]", "");
 
-  std::vector<std::string> loc_list;
-  boost::algorithm::split(loc_list, location, boost::is_any_of(","));
+  std::vector<std::string> location_list;
+  boost::algorithm::split(location_list, location, boost::is_any_of(","));
 
-  std::vector<std::string> locname_list;
-  for(unsigned int i = 0; i < loc_list.size(); i++) {
+  std::vector<std::string> location_name_list;
+  for(unsigned int i = 0; i < location_list.size(); i++) {
     std::vector<std::string> tmp;
 
-    for(unsigned int j = 0; j < loc_list[i].size(); j += 1) {
-      tmp.push_back(loc_list[i].substr(j, 1));
+    for(unsigned int j = 0; j < location_list[i].size(); j += 1) {
+      tmp.push_back(location_list[i].substr(j, 1));
     }
     std::string location_name("/" + boost::algorithm::join(tmp, "/"));
 
-    locname_list.push_back(location_name);
+    location_name_list.push_back(location_name);
   };
 
-  std::vector<std::string> Interest_list;
-  for(unsigned int i = 0; i < locname_list.size(); i++) {
-    std::string Interest_name(locname_list[i] + "/" + function_name + "/" + "#a:[" + loc_list[i] +
-                              "] " + target);
-    std::cerr << "Interest name: " << Interest_name << std::endl;
-    Interest_list.push_back(Interest_name);
+  for(unsigned int i = 0; i < location_name_list.size(); i++) {
+    std::string name(location_name_list[i] + "/" + function_name + "/" + "#a:[" + location_list[i] + "] " + target);
+    std::cerr << "Interest name: " << name << std::endl;
+    interest_name_list.push_back(name);
   }
-
-  return Interest_list;
+  return;
 }
 
 std::vector<std::string> Producer::ExtractTargets(const std::string& interest_name)
