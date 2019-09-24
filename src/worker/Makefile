@@ -22,7 +22,11 @@ endif
 INCFLAGS=$(OPENCVCFLAGS)
 CXXFLAGS=-std=c++14 -Wall -O2 -g $(INCFLAGS) `pkg-config json11 --cflags`
 LDFLAGS=
-LDLIBS=-lfcopss -lndn-cxx -lboost_system -lpthread $(OPENCVLDFLAGS) `pkg-config json11 --libs`
+LDLIBS=-lfcopss -lndn-cxx -lboost_system -lpthread -lboost_program_options $(OPENCVLDFLAGS) `pkg-config json11 --libs`
+
+ifeq ($(OS),Darwin)
+CXXFLAGS+=-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+endif
 
 SRC_DIR := src
 BIN_DIR := bin

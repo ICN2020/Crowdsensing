@@ -24,56 +24,25 @@
  * @author Yoji Yamamoto
  *
  */
-#include <unistd.h>
 #include <functional>
 #include <iostream>
 
 #include "objectdetection.hpp"
 #include "worker.hpp"
+#include "parameter.hpp"
 
 int main(int argc, char **argv)
 {
-  if(argc < 3) {
-    fprintf(stderr, "Usage: %s -c CD\n", argv[0]);
-    return 1;
-  }
-
-  int c;
-  char *cd = nullptr;
-  std::string dummy_file;
-  bool emulation_mode = false;
-
-  while((c = getopt(argc, argv, "c:d:e")) != -1) {
-    switch(c) {
-      case 'c':
-        cd = optarg;
-        break;
-      case 'd':
-        dummy_file = optarg;
-        break;
-      case 'e':
-        emulation_mode = true;
-        break;
-      default:
-        fprintf(stderr, "Usage: %s -c CD\n", argv[0]);
-        return 2;
-    }
-  }
-
-  if(cd == nullptr) {
-    fprintf(stderr, "Usage: %s -c CD\n", argv[0]);
-    return 1;
-  }
+  Parameter::instance().parse(argc, argv);
 
   try {
     detector_ptr detector;
-    if(emulation_mode) {
+    if(Parameter::instance().is_emulation_mode()) {
       detector = detector_ptr(new EmulateObjectDetection());
     } else {
-      detector = detector_ptr(new DnnObjectDetection(dummy_file));
+      detector = detector_ptr(new DnnObjectDetection(Parameter::instance().dummy_file()));
     }
-    // fcopss::client::Subscriber subscriber(cd, detector);
-    Worker worker(cd, detector);
+    Worker worker(Parameter::instance().cd(), detector);
     worker.run();
   } catch(std::exception &e) {
     std::cerr << e.what() << std::endl;

@@ -69,38 +69,36 @@ class DnnObjectDetection : public ObjectDetection {
  public:
   DnnObjectDetection(const std::string& dummy_file);
   ~DnnObjectDetection();
-  void detect(cv::Mat frame, std::vector<std::string>& result) override;
-
-  // ムーブはOK
   DnnObjectDetection(DnnObjectDetection&&) = default;
   DnnObjectDetection& operator=(DnnObjectDetection&&) = default;
-
-  // コピー禁止
   DnnObjectDetection(const DnnObjectDetection&) = delete;
   DnnObjectDetection& operator=(const DnnObjectDetection&) = delete;
 
+  void detect(cv::Mat frame, std::vector<std::string>& result) override;
+
  private:
-  void postprocess(cv::Mat& frame, const std::vector<cv::Mat>& out,
-                   std::vector<std::string>& result);
+  void postprocess(cv::Mat& frame, const std::vector<cv::Mat>& out, std::vector<std::string>& result);
   void drawPred(int classId, float conf, int left, int top, int right, int bottom, cv::Mat& frame);
   std::vector<cv::String> getOutputsNames();
   void capture();
 
  private:
-  const float confThreshold = 0.5;  // Confidence threshold
-  const float nmsThreshold = 0.4;   // Non-maximum suppression threshold
-  const int inpWidth = 416;         // Width of network's input image
-  const int inpHeight = 416;        // Height of network's input image
+  const float confThreshold = 0.5;      // Confidence threshold
+  const float nmsThreshold  = 0.4;      // Non-maximum suppression threshold
+  const int   inpWidth      = 416;      // Width of network's input image
+  const int   inpHeight     = 416;      // Height of network's input image
+
   const std::string m_dummy_file;
+
   const bool m_is_dummy_mode;
   const bool m_is_verbose;
 
-  cv::VideoCapture m_camera;
-  cv::Mat m_frame;
-  cv::dnn::Net m_net;
+  cv::VideoCapture         m_camera;
+  cv::Mat                  m_frame;
+  cv::dnn::Net             m_net;
   std::vector<std::string> m_classes;
-  std::thread m_thread;
-  mutable std::mutex m_mutex;
+  std::thread              m_thread;
+  mutable std::mutex       m_mutex;
 
   bool m_run;
 };

@@ -70,10 +70,10 @@ Producer::Producer(int mode, detector_ptr detector)
       m_thread_pool(),
       m_timer_service(),
       m_id_generator(1),
-      edge_mode(mode),
+      m_edge_mode(mode),
       m_detector(detector),
-      ArribalInterests(0),
-      AllInterests(0)
+      m_number_of_arrival_interest(0),
+      m_issued_interest(0)
 {
   for(auto&& ios : m_io_service_pool) {
     m_worker_pool.emplace_back(ios);
@@ -81,7 +81,7 @@ Producer::Producer(int mode, detector_ptr detector)
   for(unsigned int n = 0; n < m_num_thread; ++n) {
     m_thread_pool.emplace_back([this, n] { this->m_io_service_pool.at(n % m_num_queue).run(); });
   }
-  std::cerr << "mode: " << edge_mode << std::endl;
+  std::cerr << "mode: " << m_edge_mode << std::endl;
 
   m_timer_worker.reset(new boost::asio::io_service::work(m_timer_service));
 }
@@ -97,7 +97,7 @@ Producer::~Producer()
 void Producer::run()
 {
   std::thread timer_thread([this] { this->m_timer_service.run(); });
-  if(edge_mode == 'c') {
+  if(m_edge_mode == 'c') {
     std::cerr << "[INFO] Cloud mode" << std::endl;
     std::thread ndn_thread([this] {
       std::cerr << "[INFO] Run NFD" << std::endl;
@@ -108,7 +108,7 @@ void Producer::run()
       this->m_ndn_face.processEvents();
     });
     ndn_thread.join();
-  } else if(edge_mode == 'e') {
+  } else if(m_edge_mode == 'e') {
     std::cerr << "[INFO] Edge mode" << std::endl;
     std::thread ndn_thread([this] {
       std::cerr << "[INFO] Run NFD" << std::endl;
@@ -132,8 +132,8 @@ void Producer::onInterest(const ndn::InterestFilter& filter, const ndn::Interest
   std::cerr << ss.str().c_str() << std::endl;
   ss.clear();
   ss.str("");
-  ArribalInterests = 0;
-  AllInterests = 0;
+  m_number_of_arrival_interest = 0;
+  m_issued_interest = 0;
 
   // Create new name, based on Interest's name
   ndn::Name data_name(interest.getName());
@@ -141,7 +141,7 @@ void Producer::onInterest(const ndn::InterestFilter& filter, const ndn::Interest
       .append("IoT")     // add "teDEBUGstAdpp" component to Interest name
       .appendVersion();  // add "version" component (current UNIX timestamp in milliseconds)
 
-  if(!interest.hasParameters()) {
+  if(!interest.hasApplicationParameters()) {
     std::cerr << "[WARN] Received packet does not have a parameter field." << std::endl;
   }
 
@@ -149,7 +149,7 @@ void Producer::onInterest(const ndn::InterestFilter& filter, const ndn::Interest
 
   std::string interest_name(decodeURI(interest.getName().toUri()));
   std::vector<std::string> Reinvoke_name(convertInterestName(interest_name));
-  AllInterests = Reinvoke_name.size();
+  m_issued_interest = Reinvoke_name.size();
 
   // Create Data packet
   std::shared_ptr<ndn::Data> data_packet(new ndn::Data());
@@ -174,8 +174,8 @@ void Producer::onInterest(const ndn::InterestFilter& filter, const ndn::Interest
     re_interest.setMustBeFresh(true);
     re_interest.setInterestLifetime(1_s);
     std::vector<uint8_t> parameter;
-    parameter.push_back(edge_mode);
-    re_interest.setParameters(parameter.data(), parameter.size());
+    parameter.push_back(m_edge_mode);
+    re_interest.setApplicationParameters(parameter.data(), parameter.size());
 
     std::cerr << "Sending Interest " << re_interest << std::endl;
 
@@ -192,8 +192,8 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
   std::cerr << ss.str().c_str() << std::endl;
   ss.clear();
   ss.str("");
-  ArribalInterests = 0;
-  AllInterests = 0;
+  m_number_of_arrival_interest = 0;
+  m_issued_interest = 0;
 
   // Create new name, based on Interest's name
   ndn::Name data_name(interest.getName());
@@ -201,16 +201,16 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
       .append("IoT")     // add "teDEBUGstAdpp" component to Interest name
       .appendVersion();  // add "version" component (current UNIX timestamp in milliseconds)
 
-  if(!interest.hasParameters()) {
+  if(!interest.hasApplicationParameters()) {
     std::cerr << "[WARN] Received packet does not have a parameter field." << std::endl;
   }
 
   uint64_t session_id(m_id_generator());
 
-  target_name = ExtractTargets(decodeURI(interest.getName().toUri()));
+  m_target_name = ExtractTargets(decodeURI(interest.getName().toUri()));
   std::string interest_name(decodeURI(interest.getName().toUri()));
   std::vector<std::string> Reinvoke_name(convertInterestName(interest_name));
-  AllInterests = Reinvoke_name.size();
+  m_issued_interest = Reinvoke_name.size();
 
   // Create Data packet
   std::shared_ptr<ndn::Data> data_packet(new ndn::Data());
@@ -233,7 +233,7 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
     ndn::Interest re_interest(interestName);
     re_interest.setCanBePrefix(true);
     re_interest.setMustBeFresh(true);
-    loc_name = ExtractLocname(Reinvoke_name[j] + "/" + std::to_string(session_id));
+    m_location_name = ExtractLocname(Reinvoke_name[j] + "/" + std::to_string(session_id));
 
     std::cerr << "Cloud:Sending Interest " << re_interest << std::endl;
 
@@ -242,7 +242,7 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
     Opt.useConstantCwnd = true;
     Opt.initCwnd = 1;
 
-    Execute executor(re_interest.getName().toUri().c_str(), loc_name[0], target_name[0],
+    Execute executor(re_interest.getName().toUri().c_str(), m_location_name[0], m_target_name[0],
                      std::to_string(session_id), m_detector, this);
     std::thread ndn_thread([this, re_interest, Opt, executor] {
       auto fetcher = ndn::util::SegmentFetcher::start(
@@ -278,13 +278,13 @@ void Producer::adddata(std::string result)
               << std::endl;
   }
 
-  ArribalInterests++;
-  if(ArribalInterests == AllInterests) {
+  m_number_of_arrival_interest++;
+  if(m_number_of_arrival_interest == m_issued_interest) {
     std::cerr << "send data" << std::endl;
     boost::system::error_code error;
     send_data(error, session_id);
-    ArribalInterests = 0;
-    AllInterests = 0;
+    m_number_of_arrival_interest = 0;
+    m_issued_interest = 0;
   }
 
   return;
@@ -318,14 +318,14 @@ void Producer::onData(const ndn::Interest&, const ndn::Data& data)
               << std::endl;
   }
 
-  ArribalInterests++;
-  // std::cerr << ArribalInterests << " " << AllInterests << std::endl;
-  if(ArribalInterests == AllInterests) {
+  m_number_of_arrival_interest++;
+  // std::cerr << m_number_of_arrival_interest << " " << m_issued_interest << std::endl;
+  if(m_number_of_arrival_interest == m_issued_interest) {
     std::cerr << "send data" << std::endl;
     boost::system::error_code error;
     send_data(error, session_id);
-    ArribalInterests = 0;
-    AllInterests = 0;
+    m_number_of_arrival_interest = 0;
+    m_issued_interest = 0;
   }
   return;
 }
@@ -403,9 +403,9 @@ std::vector<std::string> Producer::convertInterestName(const std::string& intere
     for(unsigned int j = 0; j < loc_list[i].size(); j += 1) {
       tmp.push_back(loc_list[i].substr(j, 1));
     }
-    std::string loc_name("/" + boost::algorithm::join(tmp, "/"));
+    std::string location_name("/" + boost::algorithm::join(tmp, "/"));
 
-    locname_list.push_back(loc_name);
+    locname_list.push_back(location_name);
   };
 
   std::vector<std::string> Interest_list;

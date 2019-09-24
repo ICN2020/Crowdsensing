@@ -38,13 +38,6 @@
 #include "objectdetection.hpp"
 #include "producer.hpp"
 
-namespace ndn {
-class Interest;
-class Data;
-class InterestFilter;
-class Name;
-};  // namespace ndn
-
 class Execute {
  public:
   Execute(std::string prefix, std::string loc, std::string target, std::string sid, detector_ptr detector, Producer* prod);

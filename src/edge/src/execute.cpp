@@ -56,8 +56,8 @@ void Execute::afterFetchComplete(const ndn::ConstBufferPtr& data)
 
   // const ndn::Block wire(&tmp,tmp.size());
   // const ndn::Block wire(data,data->begin(),data->end(),true);
-  // const ndn::Block wire(ndn::tlv::AppPrivateBlock1, data);
-  const ndn::Block wire(UINT8_WIDTH, data);
+  const ndn::Block wire(ndn::tlv::AppPrivateBlock1, data);
+  // const ndn::Block wire(UINT8_WIDTH, data);
   const size_t length = wire.value_size();
   const uint8_t* value_ptr = wire.value();
   const std::vector<uint8_t> value(&value_ptr[0], &value_ptr[length]);

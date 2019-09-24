@@ -113,9 +113,9 @@ void Worker::onInterest(const ndn::InterestFilter& filter, const ndn::Interest& 
   ss.str("");
 
   std::string edge_mode = "c";
-  if(interest.hasParameters()) {
-    std::string param(interest.getParameters().value(),
-                      interest.getParameters().value() + interest.getParameters().value_size());
+  if(interest.hasApplicationParameters()) {
+    std::string param(interest.getApplicationParameters().value(),
+                      interest.getApplicationParameters().value() + interest.getApplicationParameters().value_size());
     std::cerr << "parameter  oK: " << param << std::endl;
     edge_mode = param;
   }

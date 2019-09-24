@@ -58,9 +58,28 @@ class Producer : boost::noncopyable {
   void run();
   void adddata(std::string result);
 
-  ndn::KeyChain m_key_chain;
+ private:
+  void onInterest(const ndn::InterestFilter& filter, const ndn::Interest& interest);
+  void onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::Interest& interest);
+  void onRegisterFailed(const ndn::Name& prefix, const std::string& reason);
+  void onData(const ndn::Interest&, const ndn::Data& data);
+  void onNack(const ndn::Interest&, ndn::lp::Nack& nack);
+  void onTimeout(const ndn::Interest& interest);
 
-  ndn::Face m_ndn_face;
+  void send_data(const boost::system::error_code& error, uint64_t session_id);
+  //この3つはまとめる
+  std::vector<std::string> convertInterestName(const std::string& interest_name);
+  // void convertInterestName(const std::string& interest_name, std::vector<std::string> &result);
+  std::vector<std::string> ExtractTargets(const std::string& interest_name);
+  std::vector<std::string> ExtractLocname(const std::string& interest_name);
+  std::string decodeURI(const std::string& uri);
+
+  template <class F> void post_task(F f);
+  boost::asio::io_service& io_service();
+
+ private:
+  ndn::KeyChain m_key_chain;
+  ndn::Face     m_ndn_face;
 
   std::unique_ptr<ndn::Face> m_ndn_face_ptr;
 
@@ -79,32 +98,14 @@ class Producer : boost::noncopyable {
 
   std::mt19937_64 m_id_generator;
 
-  uint8_t edge_mode;
+  const uint8_t m_edge_mode;
   detector_ptr m_detector;
 
-  std::vector<std::string> target_name;
-  std::vector<std::string> loc_name;
+  std::vector<std::string> m_target_name;
+  std::vector<std::string> m_location_name;
 
-  uint64_t ArribalInterests;
-  uint64_t AllInterests;
+  uint64_t m_number_of_arrival_interest;
+  uint64_t m_issued_interest;
 
- private:
-  void onInterest(const ndn::InterestFilter& filter, const ndn::Interest& interest);
-  void onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::Interest& interest);
-  void onRegisterFailed(const ndn::Name& prefix, const std::string& reason);
-  void onData(const ndn::Interest&, const ndn::Data& data);
-  void onNack(const ndn::Interest&, ndn::lp::Nack& nack);
-  void onTimeout(const ndn::Interest& interest);
-
-  void send_data(const boost::system::error_code& error, uint64_t session_id);
-  //この3つはまとめる
-  std::vector<std::string> convertInterestName(const std::string& interest_name);
-  std::vector<std::string> ExtractTargets(const std::string& interest_name);
-  std::vector<std::string> ExtractLocname(const std::string& interest_name);
-  std::string decodeURI(const std::string& uri);
-
-  template <class F>
-  void post_task(F f);
-  boost::asio::io_service& io_service();
 };
 #endif
