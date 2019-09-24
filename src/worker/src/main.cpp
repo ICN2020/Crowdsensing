@@ -29,7 +29,6 @@
 #include <iostream>
 
 #include "objectdetection.hpp"
-#include "subscribe.hpp"
 #include "worker.hpp"
 
 int main(int argc, char **argv)
