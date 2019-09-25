@@ -135,7 +135,7 @@ void DnnObjectDetection::detect(cv::Mat frame, std::vector<std::string>& result)
   } */
 
   // Create a 4D blob from a frame.
-  cv::dnn::blobFromImage(frame, blob, 1 / 255.0, cvSize(inpWidth, inpHeight), cv::Scalar(0, 0, 0),
+  cv::dnn::blobFromImage(frame, blob, 1 / 255.0, cvSize(m_input_width, m_input_height), cv::Scalar(0, 0, 0),
                          true, false);
 
   std::cerr << " in blob " << std::endl;
@@ -188,7 +188,7 @@ void DnnObjectDetection::postprocess(cv::Mat& frame, const std::vector<cv::Mat>&
       double confidence;
       // Get the value and location of the maximum score
       minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
-      if(confidence > confThreshold) {
+      if(confidence > m_conf_threshold) {
         int centerX = (int) (data[0] * frame.cols);
         int centerY = (int) (data[1] * frame.rows);
         int width = (int) (data[2] * frame.cols);
@@ -206,7 +206,7 @@ void DnnObjectDetection::postprocess(cv::Mat& frame, const std::vector<cv::Mat>&
   // Perform non maximum suppression to eliminate redundant overlapping boxes with
   // lower confidences
   std::vector<int> indices;
-  cv::dnn::NMSBoxes(boxes, confidences, confThreshold, nmsThreshold, indices);
+  cv::dnn::NMSBoxes(boxes, confidences, m_conf_threshold, m_nms_threshold, indices);
   for(size_t i = 0; i < indices.size(); ++i) {
     int idx = indices[i];
     cv::Rect box = boxes[idx];

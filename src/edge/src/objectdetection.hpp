@@ -83,10 +83,10 @@ class DnnObjectDetection : public ObjectDetection {
   void capture();
 
  private:
-  const float confThreshold = 0.5;      // Confidence threshold
-  const float nmsThreshold  = 0.4;      // Non-maximum suppression threshold
-  const int   inpWidth      = 416;      // Width of network's input image
-  const int   inpHeight     = 416;      // Height of network's input image
+  const float m_conf_threshold = 0.5;   // Confidence threshold
+  const float m_nms_threshold  = 0.4;   // Non-maximum suppression threshold
+  const int   m_input_width    = 416;   // Width of network's input image
+  const int   m_input_height   = 416;   // Height of network's input image
 
   const std::string m_dummy_file;
 

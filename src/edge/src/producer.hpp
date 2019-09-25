@@ -42,7 +42,6 @@
 #include <ndn-cxx/security/validator-null.hpp>
 
 #include "objectdetection.hpp"
-//#include "execute.hpp"
 
 namespace ndn {
 class Interest;

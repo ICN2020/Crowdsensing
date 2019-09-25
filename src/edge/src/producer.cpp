@@ -242,11 +242,11 @@ void Producer::onInterest_Cloud(const ndn::InterestFilter& filter, const ndn::In
     Opt.useConstantCwnd = true;
     Opt.initCwnd = 1;
 
-    Execute executor(re_interest.getName().toUri().c_str(), m_location_name[0], m_target_name[0], std::to_string(session_id), m_detector, this);
+    Executor executor(re_interest.getName().toUri().c_str(), m_location_name[0], m_target_name[0], std::to_string(session_id), m_detector, this);
     std::thread ndn_thread([this, re_interest, Opt, executor] {
       auto fetcher = ndn::util::SegmentFetcher::start(m_ndn_face, re_interest, ndn::security::v2::getAcceptAllValidator(), Opt);
-      fetcher->onComplete.connect(bind(&Execute::afterFetchComplete, executor, _1));
-      fetcher->onError.connect(bind(&Execute::afterFetchError, executor, _1, _2));
+      fetcher->onComplete.connect(bind(&Executor::afterFetchComplete, executor, _1));
+      fetcher->onError.connect(bind(&Executor::afterFetchError, executor, _1, _2));
     });
     ndn_thread.join();
   }

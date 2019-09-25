@@ -24,38 +24,36 @@
  * @author Yoji Yamamoto
  *
  */
-#include "execute.hpp"
-
-#include <algorithm>
-#include <chrono>
-#include <functional>
 #include <iostream>
-#include <iterator>
-#include <memory>
-#include <sstream>
-#include <thread>
+#include <vector>
+#include <string>
+#include <algorithm>
 
+#include "execute.hpp"
 #include "encode.hpp"
 
-Execute::Execute(std::string prefix, std::string loc, std::string target, std::string sid, detector_ptr detector, Producer* prod)
-    : fetcher_name(prefix),
-      location_name(loc),
-      target_name(target),
-      session_id(sid),
+#include <ndn-cxx/encoding/tlv.hpp>
+#include <ndn-cxx/encoding/block.hpp>
+#include <ndn-cxx/encoding/buffer.hpp>
+
+Executor::Executor(std::string prefix, std::string location, std::string target,
+                   std::string session_id, detector_ptr detector, Producer *producer)
+    : m_fetcher_name(prefix),
+      m_location_name(location),
+      m_target_name(target),
+      m_session_id(session_id),
       m_detector(detector),
-      producer(prod)
+      m_producer(producer)
 {
 }
 
-Execute::~Execute() {}
+Executor::~Executor() {}
 
-void Execute::afterFetchComplete(const ndn::ConstBufferPtr& data)
+void Executor::afterFetchComplete(const ndn::ConstBufferPtr& data)
 {
   // object detection process and the same process as onData
   std::cerr << "got data " << std::endl;
 
-  // const ndn::Block wire(&tmp,tmp.size());
-  // const ndn::Block wire(data,data->begin(),data->end(),true);
   const ndn::Block wire(ndn::tlv::AppPrivateBlock1, data);
   // const ndn::Block wire(UINT8_WIDTH, data);
   const size_t length = wire.value_size();
@@ -67,7 +65,7 @@ void Execute::afterFetchComplete(const ndn::ConstBufferPtr& data)
   std::vector<std::string> detection_result;
   m_detector->detect(raw, detection_result);
 
-  std::cerr << "Specified target: [" << target_name << "]" << std::endl;
+  std::cerr << "Specified target: [" << m_target_name << "]" << std::endl;
   std::cerr << "List of detected objects: [" << std::endl;
   for(const std::string& line : detection_result) {
     std::cerr << line << std::endl;
@@ -75,8 +73,7 @@ void Execute::afterFetchComplete(const ndn::ConstBufferPtr& data)
   std::cerr << "]" << std::endl;
 
   bool is_found = false;
-  if(std::find(detection_result.begin(), detection_result.end(), target_name) !=
-     detection_result.end()) {
+  if(std::find(detection_result.begin(), detection_result.end(), m_target_name) != detection_result.end()) {
     std::cout << "------------------------------------" << std::endl;
     std::cout << "----------[Target Found!]-----------" << std::endl;
     std::cout << "------------------------------------" << std::endl;
@@ -87,11 +84,11 @@ void Execute::afterFetchComplete(const ndn::ConstBufferPtr& data)
     std::cout << "------------------------------------" << std::endl;
     is_found = false;
   }
-  std::string result_str = Encoder::encode(location_name, "", target_name, is_found, session_id);
-  producer->adddata(result_str);
+  std::string result_str = Encoder::encode(m_location_name, "", m_target_name, is_found, m_session_id);
+  m_producer->adddata(result_str);
 }
 
-void Execute::afterFetchError(uint32_t errorCode, const std::string& ErrorMsg)
+void Executor::afterFetchError(uint32_t errorCode, const std::string& ErrorMsg)
 {
   std::cerr << errorCode << " " << ErrorMsg << std::endl;
 }
